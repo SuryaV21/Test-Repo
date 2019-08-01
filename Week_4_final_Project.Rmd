@@ -1,0 +1,114 @@
+---
+title: "Predictive Machine Learning"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Reading the required libraried and data from 2 different sources
+
+```{r }
+setwd("D://Analytics//Data Sciences//Practical Machine Learning")
+library(caret);library(rattle); library(rpart)
+```
+
+
+```{r Loading data}
+training <- read.csv("pml-training.csv")
+testing <- read.csv("pml-testing.csv")
+dim(training);dim(testing)
+```
+ Looking at the train data
+```{r glance at train data}
+str(training)
+```
+ If the column data is less than 50% it is diffcult to impute. So we are looking the columns which are having more than 70% nulls
+
+``` {r Remove columns if contains more than 70% nulls}
+NullColumns <- which(colSums(is.na(training) |training=="")>0.7*dim(training)[1]) 
+training<- training[,-NullColumns]
+```
+Removing 7 variables as we do not need that information 
+
+```{r removing unneccessary variables}
+training <- training[,-c(1:7)]
+## Data After removing nulls and non-important columns
+dim(training)
+```
+
+To check the efficiancy of the model, we are splitting the training data into train and test before implementing on actual test data
+
+```{r Splitting train data into train and test data}
+set.seed(12345)
+inTrain <- createDataPartition(training$classe, p=0.75, list=FALSE)
+train <- training[inTrain,]
+test <- training[-inTrain,]
+dim(train);dim(test)
+```
+We will check the accuracy by applying multiple models. Below is Classification Model
+
+```{r Applying Classification model}
+#RModel <- rpart(classe ~ ., data=train, method="class")
+
+tcontrol <- trainControl(method="cv", number=5)
+CTModel <- train(classe~., data=train, method="rpart", trControl=tcontrol)
+fancyRpartPlot(CTModel$finalModel)
+```
+
+Prdiction of Test data using Cross-Validation Model
+
+```{r prediction for test data using CV model}
+testpred <- predict(CTModel,newdata=test)
+
+confMatCT <- confusionMatrix(test$classe,testpred)
+
+confMatCT$table; confMatCT$overall[1]
+
+```
+
+Random Forest Model prediction using Train data
+
+```{r Predicting with Random Forests}
+tcontrol <- trainControl(method="cv", number=5)
+RFModel <- train(classe~., data=train, method="rf", trControl=tcontrol, verbose=FALSE)
+
+print(RFModel)
+
+```
+Test data model prediction
+
+
+```{r test prediction}
+testpred <- predict(RFModel,newdata=test)
+
+confMatRF <- confusionMatrix(test$classe,testpred)
+confMatRF$overall[1];RFModel$finalModel$classes
+
+```
+Gradient Boosting model
+
+```{r Prediction with Gradient Boosting}
+tcontrol <- trainControl(method="cv", number=5)
+GBModel <- train(classe~., data=train, method="gbm", trControl=tcontrol, verbose=FALSE)
+
+print(GBModel)
+
+```
+
+```{r test prediction with Gradient Boosting}
+testpred <- predict(GBModel,newdata=test)
+
+confMatGBM <- confusionMatrix(test$classe,testpred)
+confMatGBM$table
+
+```
+Applying better model 
+
+```{r Applying Final model on original test data}
+
+testingpred <- predict(RFModel, newdata=testing)
+testingpred
+
+```
