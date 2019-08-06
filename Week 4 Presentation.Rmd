@@ -26,7 +26,7 @@ Form of Input used: Radio Button
 
 Reactive output Line chart displayed based on the selections
 
-The server.R and ui.R codes are posted on github at: 
+The server.R and ui.R codes are posted on github at: https://github.com/SuryaV21/Test-Repo
 
 This app is hosted at: https://svinnakota.shinyapps.io/week_4/
 
