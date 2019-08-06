@@ -1,0 +1,113 @@
+---
+title: "Developing Data Products Week 4 Assignment"
+author: "Santosh Vinnakota"
+date: "06/08/2019"
+output:
+  ioslides_presentation: default
+  slidy_presentation: default
+---
+
+
+
+## Overview
+
+
+This is an RStudio shiny application developed as a part of week 4 project in the Developing Data Products course in Coursera Data Science Specialization track. The application is dynamic line chart based on the selection
+
+The project includes:
+
+Radio button 
+
+
+
+## Application Contains
+
+Form of Input used: Radio Button
+
+Reactive output Line chart displayed based on the selections
+
+The server.R and ui.R codes are posted on github at:https://github.com/SuryaV21/Test-Repo/tree/gh-pages/Week_4_Project
+
+This app is hosted at: https://svinnakota.shinyapps.io/week_4/
+
+## Shiny Code
+
+library(shiny)
+
+
+shinyUI(fluidPage(
+
+    # Application title
+    titlePanel("Old Faithful Geyser Data"),
+    
+    radioButtons('Test', 'choose selection', choices = c('mpg','disp'), selected = 'mpg',
+                 inline = FALSE, width = NULL, choiceNames = NULL,
+                 choiceValues = NULL)
+    ,    verbatimTextOutput("ncount_2")
+    ,plotlyOutput("graph")
+    
+))
+
+library(shiny)
+
+
+shinyServer(function(input, output) {
+
+    library(plotly)
+   
+    output$ncount_2 <- renderPrint({
+        ncount <- input$Test
+        paste(ncount,"100",sep="_")
+    })
+    output$graph <- renderPlotly({
+
+       if (input$Test == 'mpg') {
+           
+           plot_ly(mtcars, x= ~wt, y = ~mpg,type = "scatter", mode = "lines+markers", color = ~as.factor(cyl))
+       }
+       
+        else {
+            plot_ly(mtcars, x= ~wt, y = ~disp,type = "scatter", mode = "lines+markers", color = ~as.factor(cyl))  
+        }
+        
+    })
+
+})
+
+
+
+
+## output
+
+
+```
+## Loading required package: ggplot2
+```
+
+```
+## 
+## Attaching package: 'plotly'
+```
+
+```
+## The following object is masked from 'package:ggplot2':
+## 
+##     last_plot
+```
+
+```
+## The following object is masked from 'package:stats':
+## 
+##     filter
+```
+
+```
+## The following object is masked from 'package:graphics':
+## 
+##     layout
+```
+
+preserve7def5bf414de16d0
+
+
+
