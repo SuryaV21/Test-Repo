@@ -1,0 +1,10 @@
+name: test-repo
+title:
+username:
+account: svinnakota
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1070290
+bundleId: 2294595
+url: https://svinnakota.shinyapps.io/test-repo/
+when: 1565092176.33307

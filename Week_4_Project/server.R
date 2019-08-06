@@ -12,15 +12,23 @@ library(shiny)
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
 
-    output$distPlot <- renderPlot({
+    library(plotly)
+   
+    output$ncount_2 <- renderPrint({
+        ncount <- input$Test
+        paste(ncount,"100",sep="_")
+    })
+    output$graph <- renderPlotly({
 
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
-
+       if (input$Test == 'mpg') {
+           
+           plot_ly(mtcars, x= ~wt, y = ~mpg,type = "scatter", mode = "lines+markers", color = ~as.factor(cyl))
+       }
+       
+        else {
+            plot_ly(mtcars, x= ~wt, y = ~disp,type = "scatter", mode = "lines+markers", color = ~as.factor(cyl))  
+        }
+        
     })
 
 })
