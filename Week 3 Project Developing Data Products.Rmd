@@ -1,0 +1,26 @@
+---
+title: "Week 3 Developing Data Products"
+author: "Santosh Vinnakota"
+date: "06/08/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Reading Library and dataset
+```{r mtcars}
+library(plotly)
+head(mtcars)
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot_ly(mtcars, x= ~wt, y = ~mpg,type = "scatter", mode = "lines+markers", color = ~as.factor(cyl))
+```
+
