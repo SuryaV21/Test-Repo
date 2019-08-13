@@ -1,0 +1,30 @@
+---
+title: "CourseraWeek7Project"
+author: "Santosh Vinnakota"
+date: "13/08/2019"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Info
+
+
+The goal of this project is to create prediction algorithm to highight a next word 
+and to provide a user interface to that can be accessed by others
+
+## Application
+
+1. When the application is initially opened, Blank text is provided to enter the text and when clicked on below 3 predictions, it will display words
+2. Once the user enters word/statement, it predicts the next words
+
+## Output
+1. Once the user enters the text in the text box, it predicts relavent 3 words in Guess1,2,3
+
+
+## Documentation:
+1. App is available in Shinyapps.io [https://svinnakota.shinyapps.io/projectweek7capstone/]
+2. Markdown is created and pushed in Github. [https://github.com/SuryaV21/Test-Repo]
+
