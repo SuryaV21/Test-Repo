@@ -1,0 +1,114 @@
+---
+title: "CapstoneWeek2Project"
+author: "Santosh"
+date: "13/08/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+``` {r Reading Library files} 
+library(tm)
+library(SnowballC)
+library(RWeka)
+library(ggplot2)
+library(wordcloud)
+library(RColorBrewer)
+library(stringi)
+```
+
+``` {r Loading data }
+setwd("D://DataAnalytics//Capstone Project//Coursera-SwiftKey//final//en_US")
+
+blogs <- readLines("en_US.blogs.txt", encoding="UTF-8", skipNul=TRUE)
+
+news <- readLines("en_US.news.txt", encoding="UTF-8", skipNul=TRUE, warn = FALSE)
+
+twitter <- readLines("en_US.twitter.txt", encoding="UTF-8", skipNul=TRUE)
+```
+
+
+``` {r Cehcking Lines Count }
+length(blogs);length(twitter); length(news)
+```
+
+```{r Words Summary}
+
+blogswords <- stri_count_words(blogs)
+summary(blogswords)
+twitterwords <- stri_count_words(twitter)
+summary(twitterwords)
+newswords <- stri_count_words(news)
+summary(newswords)
+```
+
+```{r Histogram for Words}
+
+par(mfrow=c(2,2))
+hist(twitterwords)
+hist(blogswords)
+hist(newswords)
+
+```
+For simplified calculation we are considering top 1600 lines for sampling from each data set.
+
+``` {r Data Sampling}
+
+Datasample <- c( sample(blogs, 1600),  sample(news, 1600),sample(twitter, 1600))
+OverallData <- VCorpus(VectorSource(Datasample))
+```
+
+``` {r Cleaning the Data}
+NonASCIIRemove <- function(y) iconv(y, "latin1", "ASCII", sub="")
+OverallData <- tm_map(OverallData, removePunctuation)
+OverallData <- tm_map(OverallData, removeNumbers)
+OverallData <- tm_map(OverallData, content_transformer(NonASCIIRemove))
+OverallData <- tm_map(OverallData, stripWhitespace)
+OverallData <- tm_map(OverallData, removeWords, stopwords("english"))
+OverallData <- tm_map(OverallData, content_transformer(tolower))
+OverallData <- tm_map(OverallData, stemDocument)
+```
+
+``` {r Single N-Gram}
+SinglegramTokenizer <- function(y) NGramTokenizer(y, Weka_control(min=1, max=1))
+dtmatrix <- DocumentTermMatrix(OverallData, control = list(tokenize=SinglegramTokenizer))
+
+WordFrequency <- sort(colSums(as.matrix(dtmatrix)), decreasing=TRUE)
+WordFrequency <- data.frame( word = names(WordFrequency), frequency = WordFrequency)
+
+ggplot(subset(WordFrequency, frequency >= 200), aes(x=reorder(word, -frequency), y=frequency)) +
+  geom_bar(stat="identity") + theme(axis.text.x = element_text(angle = 90))
+```
+
+``` {r Bi N-Gram}
+
+BiNgramTokenizer <- function(y) NGramTokenizer(y, Weka_control(min=2, max=2))
+dtmatrix <- DocumentTermMatrix(OverallData, control = list(tokenize=BiNgramTokenizer))
+
+WordFrequency <- sort(colSums(as.matrix(dtmatrix)), decreasing=TRUE)
+WordFrequency <- data.frame( word = names(WordFrequency), frequency = WordFrequency)
+
+ggplot(subset(WordFrequency, frequency >= 15), aes(x=reorder(word, -frequency), y=frequency)) +
+  geom_bar(stat="identity") + theme(axis.text.x = element_text(angle = 90))
+```
+
+``` {r Three N-Gram}
+TriNgramTokenizer <- function(y) NGramTokenizer(y, Weka_control(min=3, max=3))
+dtmatrix <- DocumentTermMatrix(OverallData, control = list(tokenize=TriNgramTokenizer))
+
+WordFrequency <- sort(colSums(as.matrix(dtmatrix)), decreasing=TRUE)
+WordFrequency <- data.frame(word = names(WordFrequency), frequency = WordFrequency )
+
+ggplot(subset(WordFrequency, frequency >= 4), aes(x=reorder(word, -frequency), y=frequency)) +
+  geom_bar(stat="identity") + theme(axis.text.x = element_text(angle = 90))
+```
+
+Next steps and Conclusion:
+
+The sample proved to be sufficient. However, some problems still yet to be solved. (For example, Replace every “don’t”, “can’t” and others with “do not”, “cannot” and etc.)  So, below are further steps:
+
+Improve sample’s dictionary
+Create an algorithm for the Ngram model
+Code Optimization
